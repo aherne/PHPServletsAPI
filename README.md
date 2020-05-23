@@ -1,6 +1,23 @@
 # STDOUT MVC API
 
+Table of contents:
+
+- [About](#about)
+- [Configuration](#configuration)
+- [Execution](#execution)
+    - [Configuring Shared Variables](#configuring-shared-variables)
+    - [Initialization](#initialization)
+    - [Binding Events](#binding-events)
+    - [Handling](#handling)
+- [Installation](#installation)
+- [Unit Tests](#unit-tests)
+- [Reference Guide](#reference-guide)
+
+## About
+
 This API was created to efficiently handle web requests into server responses using a MVC version where views and models are expected to be independent while controllers mediate between the two based on user request. Designed with modularity, efficiency and simplicity at its foundation, API is both object and event oriented: similar to JavaScript, it allows developers to bind logic that will be executed when predefined events are reached while handling.
+
+![diagram](https://www.lucinda-framework.com/public/images/svg/stdout-mvc-api.svg)
 
 API does nothing more than standard MVC logic, so in real life it expects a web framework to be built on top to add further features (eg: DB connectivity). In order to use it, following steps are required from developers:
 
@@ -197,7 +214,9 @@ Table below shows the effects of *domain* attribute:
 | www.example.com | makes cookie available to that subdomain and all other sub-domains of it (i.e. w2.www.example.com) |
 | example.com | makes cookie available to the whole domain (including all subdomains of it) |
 
-## Configuring Shared Variables
+## Execution
+
+### Configuring Shared Variables
 
 API allows event listeners to set variables that are going to be made available to subsequent event listeners and controllers. For each variable there is a:
 
@@ -224,7 +243,7 @@ While handling request to response, it needs to add its own [Lucinda\STDOUT\Even
 
 Unless your site is extremely simple, it will require developers to extend this class and add further variables, for whom setters and getters must be defined!
 
-## Initialization
+### Initialization
 
 Now that developers have finished setting up XML that configures the API, they are finally able to initialize it by instantiating [Lucinda\STDOUT\FrontController](https://github.com/aherne/php-servlets-api/tree/v3.0.0/src/FrontController.php).
 
@@ -239,7 +258,7 @@ Where:
 - *$documentDescriptor*: relative location of XML [configuration](#configuration) file. Example: "configuration.xml"
 - *$attributes*: see **[configuring shared variables](#configuring-shared-variables)**.
 
-## Binding Events
+### Binding Events
 
 As mentioned above, API allows developers to bind listeners to handling lifecycle events. Each event  type corresponds to a abstract [Lucinda\STDOUT\Runnable](https://github.com/aherne/php-servlets-api/tree/v3.0.0/src/Runnable.php) class:
 
@@ -271,7 +290,7 @@ To better understand how *folder* and *$className* above play together in locati
 | application/events | \Foo\TestEvent | application/events/TestEvent.php | \Foo\TestEvent |
 | application/events | foo/\Bar\TestEvent | application/events/foo/TestEvent.php | \Bar\TestEvent |
 
-## Handling
+### Handling
 
 Once above steps are done, developers are finally able to handle requests into responses via *run* method of [Lucinda\STDOUT\FrontController](https://github.com/aherne/php-servlets-api/tree/v3.0.0/src/FrontController.php), which:
 
@@ -322,6 +341,14 @@ $controller = new Lucinda\STDOUT\FrontController("configuration.xml", new Lucind
 // TODO: add event listeners here
 $controller->run();
 ```
+
+## Unit Tests
+
+For tests and examples, check following files/folders in API sources:
+
+- [test.php](https://github.com/aherne/php-servlets-api/tree/v3.0.0/test.php): runs unit tests in console
+- [unit-tests.xml](https://github.com/aherne/php-servlets-api/tree/v3.0.0/unit-tests.xml): sets up unit tests and mocks "loggers" tag
+- [tests](https://github.com/aherne/php-servlets-api/tree/v3.0.0/tests): unit tests for classes from [src](https://github.com/aherne/php-servlets-api/tree/v3.0.0/src) folder
 
 ## Reference Guide
 
@@ -726,11 +753,3 @@ Defined in XML as:
 ```xml
 <format name="html" content_type="text/html" class="HtmlResolver" charset="UTF-8"/>
 ```
-
-## Unit Tests
-
-For tests and examples, check following files/folders in API sources:
-
-- [test.php](https://github.com/aherne/php-servlets-api/tree/v3.0.0/test.php): runs unit tests in console
-- [unit-tests.xml](https://github.com/aherne/php-servlets-api/tree/v3.0.0/unit-tests.xml): sets up unit tests and mocks "loggers" tag
-- [tests](https://github.com/aherne/php-servlets-api/tree/v3.0.0/tests): unit tests for classes from [src](https://github.com/aherne/php-servlets-api/tree/v3.0.0/src) folder
