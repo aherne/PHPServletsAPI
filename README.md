@@ -5,9 +5,9 @@ Table of contents:
 - [About](#about)
 - [Configuration](#configuration)
 - [Execution](#execution)
-    - [Configuring Shared Variables](#configuring-shared-variables)
     - [Initialization](#initialization)
     - [Binding Events](#binding-events)
+    - [Configuring Shared Variables](#configuring-shared-variables)
     - [Handling](#handling)
 - [Installation](#installation)
 - [Unit Tests](#unit-tests)
@@ -22,9 +22,9 @@ This API was created to efficiently handle web requests into server responses us
 API does nothing more than standard MVC logic, so in real life it expects a web framework to be built on top to add further features (eg: DB connectivity). In order to use it, following steps are required from developers:
 
 - **[configuration](#configuration)**: setting up an XML file where this API is configured
-- **[configuring shared variables](#configuring-shared-variables)**: extend [Lucinda\STDOUT\Attributes](https://github.com/aherne/php-servlets-api/tree/v3.0.0/src/Attributes.php) class to encapsulate variables specific to your project, to be shared between event listeners and controllers
 - **[initialization](#initialization)**: instancing [Lucinda\STDOUT\FrontController](https://github.com/aherne/php-servlets-api/tree/v3.0.0/src/FrontController.php), a [Lucinda\STDOUT\Runnable](https://github.com/aherne/php-servlets-api/tree/v3.0.0/src/Runnable.php) able to handle requests into responses later on based on above two
 - **[binding events](#binding-events)**: setting up [Lucinda\STDOUT\Runnable](https://github.com/aherne/php-servlets-api/tree/v3.0.0/src/Runnable.php) classes that will be instanced and *run* when predefined events are reached during handling process
+- **[configuring shared variables](#configuring-shared-variables)**: extend [Lucinda\STDOUT\Attributes](https://github.com/aherne/php-servlets-api/tree/v3.0.0/src/Attributes.php) class to encapsulate variables specific to your project, to be shared between event listeners and controllers
 - **[handling](#handling)**: calling *run* method @ [Lucinda\STDOUT\FrontController](https://github.com/aherne/php-servlets-api/tree/v3.0.0/src/FrontController.php)  to finally handle requests into responses, triggering events above (if any)
 
 API is fully PSR-4 compliant, only requiring PHP7.1+ interpreter and SimpleXML extension. To quickly see how it works, check:
@@ -216,33 +216,6 @@ Table below shows the effects of *domain* attribute:
 
 ## Execution
 
-### Configuring Shared Variables
-
-API allows event listeners to set variables that are going to be made available to subsequent event listeners and controllers. For each variable there is a:
-
-- *setter*: to be ran once by a event listener
-- *getter*: to be ran by subsequent event listeners and controllers
-
-API comes with [Lucinda\STDOUT\Attributes](https://github.com/aherne/php-servlets-api/tree/v3.0.0/src/Attributes.php), which holds the foundation every site must extend in order to set up its own variables. Class comes with following generic methods:
-
-| Method | Arguments | Returns | Description |
-| --- | --- | --- | --- |
-| __construct | string $eventsFolder | void | Sets folder in which user-defined event listeners are located |
-| getEventsFolder | void | string | Gets folder in which user-defined event listeners are located |
-
-While handling request to response, it needs to add its own [Lucinda\STDOUT\EventListeners\RequestValidator](https://github.com/aherne/php-servlets-api/tree/v3.0.0/src/EventListeners/RequestValidator.php) in order to bind route requested to a [route](#routes) XML tag. Results of this binding are saved into [Lucinda\STDOUT\Attributes](https://github.com/aherne/php-servlets-api/tree/v3.0.0/src/Attributes.php) via setters and made available via following getters:
-
-| Method | Arguments | Returns | Description |
-| --- | --- | --- | --- |
-| getValidPage | void | string | Gets value of *url* attribute of matching [route](#routes) XML tag found either explicitly (via *url* attribute @ [route](#routes)) or implicitly (via *default_page* attribute @ [application](#application)) |
-| getValidFormat | void | string | Gets value of *name* attribute of matching [format](#formats) XML tag found either explicitly (via *format* attribute @ [route](#routes)) or implicitly (via *default_format* attribute @ [application](#application)) |
-| getPathParameters | void | array | Gets all path parameters detected from parameterized *url* attribute of matching [route](#routes) XML tag |
-| getPathParameters | string $name | string | Gets value of a path parameter detected by its name. Returns NULL if not existing! |
-| getValidParameters | void | array | Gets all parameter validation results by parameter name and validation result |
-| getValidParameters | string $name | string | Gets parameter validation result by parameter name. Returns NULL if not existing! |
-
-Unless your site is extremely simple, it will require developers to extend this class and add further variables, for whom setters and getters must be defined!
-
 ### Initialization
 
 Now that developers have finished setting up XML that configures the API, they are finally able to initialize it by instantiating [Lucinda\STDOUT\FrontController](https://github.com/aherne/php-servlets-api/tree/v3.0.0/src/FrontController.php).
@@ -289,6 +262,33 @@ To better understand how *folder* and *$className* above play together in locati
 | application/events | foo/TestEvent | application/events/foo/TestEvent.php | TestEvent |
 | application/events | \Foo\TestEvent | application/events/TestEvent.php | \Foo\TestEvent |
 | application/events | foo/\Bar\TestEvent | application/events/foo/TestEvent.php | \Bar\TestEvent |
+
+### Configuring Shared Variables
+
+API allows event listeners to set variables that are going to be made available to subsequent event listeners and controllers. For each variable there is a:
+
+- *setter*: to be ran once by a event listener
+- *getter*: to be ran by subsequent event listeners and controllers
+
+API comes with [Lucinda\STDOUT\Attributes](https://github.com/aherne/php-servlets-api/tree/v3.0.0/src/Attributes.php), which holds the foundation every site must extend in order to set up its own variables. Class comes with following generic methods:
+
+| Method | Arguments | Returns | Description |
+| --- | --- | --- | --- |
+| __construct | string $eventsFolder | void | Sets folder in which user-defined event listeners are located |
+| getEventsFolder | void | string | Gets folder in which user-defined event listeners are located |
+
+While handling request to response, it needs to add its own [Lucinda\STDOUT\EventListeners\RequestValidator](https://github.com/aherne/php-servlets-api/tree/v3.0.0/src/EventListeners/RequestValidator.php) in order to bind route requested to a [route](#routes) XML tag. Results of this binding are saved into [Lucinda\STDOUT\Attributes](https://github.com/aherne/php-servlets-api/tree/v3.0.0/src/Attributes.php) via setters and made available via following getters:
+
+| Method | Arguments | Returns | Description |
+| --- | --- | --- | --- |
+| getValidPage | void | string | Gets value of *url* attribute of matching [route](#routes) XML tag found either explicitly (via *url* attribute @ [route](#routes)) or implicitly (via *default_page* attribute @ [application](#application)) |
+| getValidFormat | void | string | Gets value of *name* attribute of matching [format](#formats) XML tag found either explicitly (via *format* attribute @ [route](#routes)) or implicitly (via *default_format* attribute @ [application](#application)) |
+| getPathParameters | void | array | Gets all path parameters detected from parameterized *url* attribute of matching [route](#routes) XML tag |
+| getPathParameters | string $name | string | Gets value of a path parameter detected by its name. Returns NULL if not existing! |
+| getValidParameters | void | array | Gets all parameter validation results by parameter name and validation result |
+| getValidParameters | string $name | string | Gets parameter validation result by parameter name. Returns NULL if not existing! |
+
+Unless your site is extremely simple, it will require developers to extend this class and add further variables, for whom setters and getters must be defined!
 
 ### Handling
 
